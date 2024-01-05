@@ -42,6 +42,7 @@ func main() {
 
 	})
 	e.POST("/products", func(c echo.Context) error {
+		//struct for map data from body
 		type body struct {
 			Name string `json:"product_name"`
 		}
