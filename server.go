@@ -36,7 +36,7 @@ func main() {
 			}
 		}
 		if product == nil {
-			return c.JSON(http.StatusNotFound, "Product not found")
+			return c.JSON(http.StatusNotFound, "product not found")
 		}
 		return c.JSON(http.StatusOK, product)
 
