@@ -1,13 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
+	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = "8080"
+	}
 	e := echo.New()
 	products := []map[int]string{{1: "mobile"}, {2: "Laptops"}, {3: "Desktops"}}
 	e.GET("/start", func(c echo.Context) error {
@@ -35,5 +41,19 @@ func main() {
 		return c.JSON(http.StatusOK, product)
 
 	})
-	e.Logger.Fatal(e.Start(":8080")) //e.Logger.Fatal use for logging error
+	e.POST("/products", func(c echo.Context) error {
+		type body struct {
+			Name string `json:"product_name"`
+		}
+		var reqBody body
+		if err := c.Bind(&reqBody); err != nil {
+			return err
+		}
+		product := map[int]string{
+			len(products) + 1: reqBody.Name,
+		}
+		products = append(products, product)
+		return c.JSON(http.StatusOK, product)
+	})
+	e.Logger.Fatal(e.Start(fmt.Sprintf("localhost:%s", port))) //e.Logger.Fatal use for logging error
 }
