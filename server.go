@@ -101,5 +101,32 @@ func main() {
 		return c.JSON(http.StatusOK, product)
 	})
 
+	e.DELETE("/products/:id", func(c echo.Context) error {
+		var product map[int]string
+		var index int
+		for i, p := range products {
+			for k := range p {
+				pID, err := strconv.Atoi(c.Param("id"))
+				if err != nil {
+					return err
+				}
+				if pID == k {
+					product = p
+					index = i
+				}
+			}
+		}
+		if product == nil {
+			return c.JSON(http.StatusNotFound, "product not found")
+		}
+		splice := func(s []map[int]string, index int) []map[int]string {
+			return append(s[:index], s[index+1:]...)
+			//[1,2,3,4,5]
+			//append: [1,2] + [4,5,6] (idiomatic in go, sometime inefficient)
+		}
+		products = splice(products, index)
+		return c.JSON(http.StatusOK, product)
+
+	})
 	e.Logger.Fatal(e.Start(fmt.Sprintf("localhost:%s", port))) //e.Logger.Fatal use for logging error
 }
