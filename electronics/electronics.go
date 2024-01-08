@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/ilyakaznacheev/cleanenv"
+
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -33,8 +35,9 @@ func preServerMessage(next echo.HandlerFunc) echo.HandlerFunc {
 
 // starts the application
 func Start() {
-	e.Use(serverMessage)    // always called after pre can be use for admin validation if needed
-	e.Pre(preServerMessage) //always called first can be use for validate token
+	e.Pre(middleware.RemoveTrailingSlash()) //always called first can be use for validate token
+
+	e.Use(serverMessage) // always called after pre can be use for admin validation if needed
 
 	e.POST("/products", createProduct)
 	// e.GET("/products", getProducts, serverMessage) route level middle ware
